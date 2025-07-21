@@ -165,7 +165,7 @@ def run(json_blob):
         
         return {
             "message": "stelardataprofiler Tool Executed Successfully",
-            "output": json_blob["output'"], 
+            "output": json_blob["output"], 
             "metrics": metrics,
             "status": "success",
         }
