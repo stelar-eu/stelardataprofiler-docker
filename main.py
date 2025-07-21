@@ -3,6 +3,7 @@ import sys
 import os
 import traceback
 from utils.mclient import MinioClient
+from time import time
 from stelardataprofiler import (
     profile_timeseries,
     profile_tabular,
