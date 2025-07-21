@@ -3,6 +3,7 @@ import sys
 import os
 import traceback
 from utils.mclient import MinioClient
+from time import time
 from stelardataprofiler import (
     profile_timeseries,
     profile_tabular,
@@ -41,7 +42,7 @@ def run(json_blob):
         td_file = inputs.get("type_detection_file", [None])[0]
         types_dict = None
         if td_file is not None:
-            mc.get_object(td_file, "types_dict.json")
+            mc.get_object(s3_path=td_file, local_path="types_dict.json")
             types_dict  = read_config("types_dict.json")
         
         # run type_detection mode
@@ -68,7 +69,7 @@ def run(json_blob):
         
         for i in range(len(files)):
             ext = os.path.splitext(files[i])[1].lower()
-            log = mc.get_object(files[i], f'file_{i}{ext}')
+            log = mc.get_object(s3_path=files[i], local_path=f'file_{i}{ext}')
             if 'error' in log:
                 raise ValueError(log['error'])
                 
@@ -153,11 +154,11 @@ def run(json_blob):
         if type_detection_mode:
             write_to_json(types_dict, "types_dict.json")
             if "types" in json_blob["output"]:
-                mc.put_object(json_blob["output"]["types"], "types_dict.json")
+                mc.put_object(s3_path=json_blob["output"]["types"], file_path="types_dict.json")
         else:
             write_to_json(profile_dict, "profile.json")
             if "profile" in json_blob["output"]:
-                mc.put_object(json_blob["output"]["profile"], "profile.json")
+                mc.put_object(s3_path=json_blob["output"]["profile"], file_path="profile.json")
         
         # evaluate metrics
         metrics = {'time': t }
