@@ -65,7 +65,7 @@ def run(json_blob):
         # if None then find profile type based on the first file in data
         profile_type = parameters.get("profile_type", None)
         
-        files = []
+        local_files = []
         
         for i in range(len(files)):
             ext = os.path.splitext(files[i])[1].lower()
@@ -78,12 +78,12 @@ def run(json_blob):
                     file = pd.read_excel(f'file_0{ext}', header=header)
                     file.to_csv('file_0.csv', index=False, header=header, sep=sep)
                     
-                    files.append(f'file_0.csv') 
+                    local_files.append(f'file_0.csv') 
                 else:
-                    files.append(f'file_{i}{ext}')
+                    local_files.append(f'file_{i}{ext}')
                 
                 
-                if profile_type is None:
+                if not profile_type:
                     if ext in [".csv", ".xlsx", ".xls", ".shp"]:
                         if ts_mode:
                             profile_type = "timeseries"
@@ -120,35 +120,33 @@ def run(json_blob):
                     profile_type = profile_type.lower()
                     
         t = time()
-        
         if type_detection_mode:
             if profile_type == "timeseries":
-                types_dict = type_detection(input_path=files[0], header=header, sep=sep, ts_mode=True, ts_mode_datetime_col=time_column)
+                types_dict = type_detection(input_path=local_files[0], header=header, sep=sep, ts_mode=True, ts_mode_datetime_col=time_column)
             elif profile_type == "tabular":
-                types_dict = type_detection(input_path=files[0], header=header, sep=sep,extra_geometry_columns=extra_geometry_columns)
+                types_dict = type_detection(input_path=local_files[0], header=header, sep=sep,extra_geometry_columns=extra_geometry_columns)
         else:
             if profile_type == "timeseries":
-                profile_dict = profile_timeseries(input_path=files[0], ts_mode_datetime_col=time_column, header=header, sep=sep, types_dict=types_dict)
+                profile_dict = profile_timeseries(input_path=local_files[0], ts_mode_datetime_col=time_column, header=header, sep=sep, types_dict=types_dict)
             elif profile_type == "tabular":
-                profile_dict = profile_tabular(input_path=files[0], header=header, sep=sep, extra_geometry_columns=extra_geometry_columns, types_dict=types_dict)
+                profile_dict = profile_tabular(input_path=local_files[0], header=header, sep=sep, extra_geometry_columns=extra_geometry_columns, types_dict=types_dict)
             elif profile_type == "textual":
                 if len(files) == 1:
-                    profile_dict = profile_text(my_path=files[0])
+                    profile_dict = profile_text(my_path=local_files[0])
                 else:
-                    profile_dict = profile_text(my_path=files)
+                    profile_dict = profile_text(my_path=local_files)
             elif profile_type == "raster":
                 if len(files) == 1:
-                    profile_dict = profile_raster(my_path=files[0])
+                    profile_dict = profile_raster(my_path=local_files[0])
                 else:
-                    profile_dict = profile_raster(my_path=files)
+                    profile_dict = profile_raster(my_path=local_files)
             elif profile_type == "rdfgraph":
-                profile_dict = profile_tabular(input_path=files[0], header=header, sep=sep, extra_geometry_columns=extra_geometry_columns)
+                profile_dict = profile_tabular(input_path=local_files[0], header=header, sep=sep, extra_geometry_columns=extra_geometry_columns)
             elif profile_type == "hierarchical":
-                profile_dict = profile_hierarchical(input_path=files[0])
+                profile_dict = profile_hierarchical(input_path=local_files[0])
             else:
                 profile_dict = {}
         t = time() - t
-        
         # output 
         
         if type_detection_mode:
