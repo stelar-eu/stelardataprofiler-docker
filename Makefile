@@ -1,5 +1,5 @@
 DOCKER=docker
-IMGTAG=panosbetchavas/stelardataprofiler:v0.0.1
+IMGTAG=img.stelar.gr/stelar/data-profiler:latest
 IMGPATH=.
 DOCKERFILE=$(IMGPATH)/Dockerfile
 
