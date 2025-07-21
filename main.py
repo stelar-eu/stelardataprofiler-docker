@@ -31,6 +31,7 @@ def run(json_blob):
         )
         
         inputs = json_blob["input"]
+        parameters = json_blob["parameters"]
         
         # we may have multiple files
         # only the first one is the main file in cases where the profiler runs with one input
@@ -93,7 +94,7 @@ def run(json_blob):
                         profile_type = "hierarchical"
                     elif ext in [".tif", ".tiff", ".img", ".vrt", ".nc", ".grd", ".asc", ".jp2", ".hdf", ".hdr", ".bil", ".png"]:
                         profile_type = "raster"
-                    elif ext in [".ttl", ".turtle", ".rdf", ".owl", ".xml", ".nt", ".nq", ".trig", ".jsonld", ".n3"]::
+                    elif ext in [".ttl", ".turtle", ".rdf", ".owl", ".xml", ".nt", ".nq", ".trig", ".jsonld", ".n3"]:
                         profile_type = "rdfgraph"
                         # Map extensions to serialization formats
                         if ext in [".ttl", ".turtle"]:
