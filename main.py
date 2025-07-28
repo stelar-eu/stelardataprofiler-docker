@@ -4,6 +4,7 @@ import os
 import traceback
 from utils.mclient import MinioClient
 from time import time
+from urllib.parse import urlparse
 from stelardataprofiler import (
     profile_timeseries,
     profile_tabular,
@@ -61,26 +62,31 @@ def run(json_blob):
         crs = parameters.get("crs", "EPSG:4326")
         eps_distance = parameters.get("eps_distance", 1000)
         extra_geometry_columns = parameters.get("extra_geometry_columns", None)
-        
+
         # if None then find profile type based on the first file in data
         profile_type = parameters.get("profile_type", None)
         
         local_files = []
-        
+        k = 0
         for i in range(len(files)):
-            ext = os.path.splitext(files[i])[1].lower()
-            log = mc.get_object(s3_path=files[i], local_path=f'file_{i}{ext}')
+            name, ext = split_name_and_ext(files[i])
+            if ext in [".shp", ".prj", ".shx", ".dbf", ".cpg"]:
+                k=0
+            else:
+                k=i
+
+            log = mc.get_object(s3_path=files[i], local_path=f'{name}_{k}{ext}')
             if 'error' in log:
                 raise ValueError(log['error'])
                 
             if i == 0:
                 if ext in [".xlsx", ".xls"]:
-                    file = pd.read_excel(f'file_0{ext}', header=header)
-                    file.to_csv('file_0.csv', index=False, header=header, sep=sep)
+                    file = pd.read_excel(f'{name}_0{ext}', header=header)
+                    file.to_csv('{name}_0.csv', index=False, header=header, sep=sep)
                     
-                    local_files.append(f'file_0.csv') 
+                    local_files.append(f'{name}_0.csv') 
                 else:
-                    local_files.append(f'file_{i}{ext}')
+                    local_files.append(f'{name}_{k}{ext}')
                 
                 
                 if not profile_type:
@@ -112,24 +118,30 @@ def run(json_blob):
                             serialization = "json-ld"
                         elif ext == ".n3":
                             serialization = "n3"
-                        else:
-                            serialization = serialization  # Default to user-given serialization if unknown RDF type
                     else:
                         profile_type = None
                 else:
                     profile_type = profile_type.lower()
+            else:
+                local_files.append(f'{name}_{k}{ext}')
                     
         t = time()
         if type_detection_mode:
             if profile_type == "timeseries":
-                types_dict = type_detection(input_path=local_files[0], header=header, sep=sep, ts_mode=True, ts_mode_datetime_col=time_column)
+                types_dict = type_detection(input_path=local_files[0], header=header, sep=sep, ts_mode=True, ts_mode_datetime_col=time_column, 
+                                            light_mode=light_mode, num_cat_perc_threshold=num_cat_perc_threshold, max_freq_distr=max_freq_distr)
             elif profile_type == "tabular":
-                types_dict = type_detection(input_path=local_files[0], header=header, sep=sep,extra_geometry_columns=extra_geometry_columns)
+                types_dict = type_detection(input_path=local_files[0], header=header, sep=sep, light_mode=light_mode, 
+                                            num_cat_perc_threshold=num_cat_perc_threshold, max_freq_distr=max_freq_distr, 
+                                            eps_distance=eps_distance, crs=crs, extra_geometry_columns=extra_geometry_columns)
         else:
             if profile_type == "timeseries":
-                profile_dict = profile_timeseries(input_path=local_files[0], ts_mode_datetime_col=time_column, header=header, sep=sep, types_dict=types_dict)
+                profile_dict = profile_timeseries(input_path=local_files[0], ts_mode_datetime_col=time_column, header=header, sep=sep, light_mode=light_mode, 
+                                                  num_cat_perc_threshold=num_cat_perc_threshold, max_freq_distr=max_freq_distr, types_dict=types_dict)
             elif profile_type == "tabular":
-                profile_dict = profile_tabular(input_path=local_files[0], header=header, sep=sep, extra_geometry_columns=extra_geometry_columns, types_dict=types_dict)
+                profile_dict = profile_tabular(input_path=local_files[0], header=header, sep=sep, light_mode=light_mode, 
+                                               num_cat_perc_threshold=num_cat_perc_threshold, max_freq_distr=max_freq_distr, 
+                                               eps_distance=eps_distance, crs=crs, extra_geometry_columns=extra_geometry_columns, types_dict=types_dict)
             elif profile_type == "textual":
                 if len(files) == 1:
                     profile_dict = profile_text(my_path=local_files[0])
@@ -141,9 +153,9 @@ def run(json_blob):
                 else:
                     profile_dict = profile_raster(my_path=local_files)
             elif profile_type == "rdfgraph":
-                profile_dict = profile_tabular(input_path=local_files[0], header=header, sep=sep, extra_geometry_columns=extra_geometry_columns)
+                profile_dict = profile_rdfGraph(my_file_path=local_files[0], parse_format=serialization)
             elif profile_type == "hierarchical":
-                profile_dict = profile_hierarchical(input_path=local_files[0])
+                profile_dict = profile_hierarchical(my_file_path=local_files[0])
             else:
                 profile_dict = {}
         t = time() - t
@@ -177,6 +189,24 @@ def run(json_blob):
             "status": 500
         }
 
+
+
+def split_name_and_ext(path: str):
+    """
+    Returns (name_without_extension, extension) for both local paths and S3 URLs.
+    Extension includes the dot (e.g., '.png') and is lowercased.
+    """
+    parsed = urlparse(path)
+    
+    # For S3: use parsed.path, for local: use path directly
+    file_path = parsed.path if parsed.scheme else path
+    
+    # Extract filename
+    filename = os.path.basename(file_path)
+    
+    # Split name and extension
+    name, ext = os.path.splitext(filename)
+    return name, ext.lower()
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
