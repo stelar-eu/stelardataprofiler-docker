@@ -18,7 +18,6 @@ from stelardataprofiler import (
 )
 import pandas as pd
 
-
 def run(json_blob):
     try:
 
@@ -188,8 +187,6 @@ def run(json_blob):
             "error": traceback.format_exc(),
             "status": 500
         }
-
-
 
 def split_name_and_ext(path: str):
     """
