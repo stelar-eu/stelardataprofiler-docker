@@ -62,6 +62,17 @@ def run(json_blob):
         eps_distance = parameters.get("eps_distance", 1000)
         extra_geometry_columns = parameters.get("extra_geometry_columns", None)
 
+        # Normalize header argument
+        if header is True:
+            header = 0
+        elif header is False:
+            header = None
+        elif isinstance(header, (int, list, type(None))):
+            # Valid Pandas options, pass through
+            pass
+        else:
+            raise ValueError(f"Invalid header value: {header}")
+
         # if None then find profile type based on the first file in data
         profile_type = parameters.get("profile_type", None)
         
