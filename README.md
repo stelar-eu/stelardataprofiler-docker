@@ -139,6 +139,7 @@ The output of stelardataprofiler has the following format:
 
 ## Type Detection 
 In tabular and timeseries, the profiler provides the [type detection mode](https://github.com/stelar-eu/data-profiler/tree/main?tab=readme-ov-file#type-detection---customize-the-profiler). 
+This particular mode produces a json file that the user can modify. The user then may provide this modified json file as type_detection_file to the input JSON structure of the standard stelardataprofiler.
 ### Input
 To run stelardataprofiler type detection mode, via STELAR KLMS API, the following input JSON structure is expected:
 
