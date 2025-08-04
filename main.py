@@ -57,7 +57,7 @@ def run(json_blob):
         num_cat_perc_threshold = parameters.get("num_cat_perc_threshold", 0.5)
         max_freq_distr = parameters.get("max_freq_distr", 10)
         ts_mode = parameters.get("ts_mode", False)
-        time_column = parameters.get("time_column", None)
+        time_column = parameters.get("time_column", "date")
         crs = parameters.get("crs", "EPSG:4326")
         eps_distance = parameters.get("eps_distance", 1000)
         extra_geometry_columns = parameters.get("extra_geometry_columns", None)
