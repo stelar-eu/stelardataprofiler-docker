@@ -7,6 +7,17 @@ Please see the provided [notebooks](https://github.com/stelar-eu/stelardataprofi
 
 # Instructions
 ## Profile
+### Profiler Types and Their Supported File Extensions
+
+| Profiler Type | Supported File Extensions               |
+|---------------|---------------------------------------|
+| timeseries    | `.csv`, `.xlsx`, `.xls`                |
+| tabular       | `.csv`, `.xlsx`, `.xls`, `.shp`       |
+| raster        | `.tif`, `.tiff`, `.img`, `.vrt`, `.nc`, `.grd`, `.asc`, `.jp2`, `.hdf`, `.hdr`, `.bil`, `.png` |
+| textual       | `.txt`                                |
+| hierarchical  | `.json`                               |
+| rdfGraph      | `.ttl`, `.turtle`, `.rdf`, `.owl`, `.xml`, `.nt`, `.nq`, `.trig`, `.jsonld`, `.n3`             |
+
 ### Input
 To run stelardataprofiler, via STELAR KLMS API, the following input JSON structure is expected:
 
