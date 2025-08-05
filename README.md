@@ -11,8 +11,8 @@ Please see the provided [notebooks](https://github.com/stelar-eu/stelardataprofi
 
 | Profiler Type | Supported File Extensions               |
 |---------------|---------------------------------------|
-| timeseries    | `.csv`, `.xlsx`, `.xls`                |
-| tabular       | `.csv`, `.xlsx`, `.xls`, `.shp`       |
+| timeseries    | `.csv`, `.xlsx`, `.xls`  (used if `ts_mode` is `False`)              |
+| tabular       | `.csv`, `.xlsx`, `.xls`, `.shp` (used if `ts_mode` is `True`)      |
 | raster        | `.tif`, `.tiff`, `.img`, `.vrt`, `.nc`, `.grd`, `.asc`, `.jp2`, `.hdf`, `.hdr`, `.bil`, `.png` |
 | textual       | `.txt`                                |
 | hierarchical  | `.json`                               |
