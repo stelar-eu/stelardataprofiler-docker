@@ -6,8 +6,8 @@
 Please see the provided [notebooks](https://github.com/stelar-eu/stelardataprofiler-docker/tree/main/notebooks).
 
 # Instructions
-## Profile
-### Profiler Types and Their Supported File Extensions
+
+## Profiler Types and Their Supported File Extensions
 
 | Profiler Type | Supported File Extensions               |
 |---------------|---------------------------------------|
@@ -18,6 +18,7 @@ Please see the provided [notebooks](https://github.com/stelar-eu/stelardataprofi
 | hierarchical  | `.json`                               |
 | rdfGraph      | `.ttl`, `.turtle`, `.rdf`, `.owl`, `.xml`, `.nt`, `.nq`, `.trig`, `.jsonld`, `.n3`             |
 
+## Profile
 ### Input
 To run stelardataprofiler, via STELAR KLMS API, the following input JSON structure is expected:
 
