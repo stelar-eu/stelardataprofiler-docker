@@ -126,7 +126,7 @@ For more information on how to generate this file, click [here](https://github.c
     ]
   ```
 
-- **`serialization`** *(str, optional, default="turtle")*  **(rdfgraph)**   
+- **`serialization`** *(str, optional, default="turtle")*  **(rdfGraph)**   
   The format of the rdf file. If not specified, the default is "turtle". 
 
   **_NOTE:_** If profile_type is None then serialization is identified based on the file extension. Extensions like **.ttl** and **.turtle** use the **turtle** serialization format, while **.rdf**, **.owl**, and **.xml** use **xml**. The **.nt** extension corresponds to **nt**, and **.nq** corresponds to **nquads**. Files with **.trig** use the **trig** format, **.jsonld** uses **json-ld**, and **.n3** uses the **n3** format.
